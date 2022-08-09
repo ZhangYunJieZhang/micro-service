@@ -1,0 +1,18 @@
+
+spring:
+  application:
+    name: gateway-oauth
+  cloud:
+    gateway:
+#      ###路由策略
+#      routes:
+#        ###路由ID
+#        - id: zyjtest
+#          ###转发的url
+#          uri: https://wwww.baidu.com
+#          ###匹配规则
+#          predicates:
+#            - Path=/payservice/**
+server:
+  port: 8383
+###访问127.0.0.1:8383/payservice直接转发到百度

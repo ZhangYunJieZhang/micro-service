@@ -8,4 +8,26 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>micro-service</name>
 
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>eureka-client</module>
+		<module>eureka-service</module>
+		<module>feign-consumer</module>
+		<module>feign-provider</module>
+		<module>hystrix-consumer</module>
+		<module>hystrix-provider</module>
+		<module>nacos-config</module>
+		<module>nacos-consumer</module>
+		<module>nacos-provider</module>
+		<module>ribbon-consumer</module>
+		<module>ribbon-provider</module>
+		<module>zuul-getway</module>
+		<module>zuul-provider</module>
+		<module>springcloud-gateway</module>
+		<module>jetcache</module>
+		<module>kafka</module>
+        <module>springboot-redis</module>
+    </modules>
+
 </project>

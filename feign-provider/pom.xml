@@ -23,7 +23,7 @@
 		<!-- feign依赖 -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-feign</artifactId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 		<!-- 没有使用feign默认的eureka注册中心而是用nacos所以引入nacos依赖 -->
 		<dependency>

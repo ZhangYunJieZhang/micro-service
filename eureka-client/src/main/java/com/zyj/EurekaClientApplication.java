@@ -23,9 +23,18 @@ public class EurekaClientApplication {
 	@RestController
 	class ServiceInstanceRestController {
 
+		/**
+		 * discoveryclient用于发现注册中心服务
+		 */
 		@Autowired
 		private DiscoveryClient discoveryClient;
 
+		/**
+		 * 本例没有写服务提供者，直接试下是否可以从注册中心获取服务，如果想调用服务可以用restTemplate或者feign
+		 * 如：String greeting = restTemplate.getForObject("http://localhost:6666/greeting",String.class);
+		 * @param applicationName
+		 * @return
+		 */
 		@RequestMapping("/service-instances/{applicationName}")
 		public List<ServiceInstance> serviceInstancesByApplicationName(
 				@PathVariable String applicationName) {

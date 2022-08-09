@@ -1,0 +1,32 @@
+
+# jetcache缓存全局配置
+jetcache:
+  ###统计间隔，0表示不统计
+  statIntervalMinutes: 15
+  ###jetcache-anno把cacheName作为远程缓存key前缀
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+    otherCacheName:
+      type: xxx
+      keyConverter: yyy
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: 127.0.0.1
+      port: 6379
+
+server:
+  port: 8081
+spring:
+  application:
+    name: jetcache

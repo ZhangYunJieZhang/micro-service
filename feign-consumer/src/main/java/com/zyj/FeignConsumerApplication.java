@@ -21,6 +21,10 @@ public class FeignConsumerApplication {
 	@Autowired
 	FeignInterface feignInterface;
 
+	/**
+	 * feign默认开启ribbon，多开启几个服务提供者就会自己负载均衡
+	 * @return
+	 */
 	@RequestMapping("/callProvider")
 	public String callProvider(){
 		return feignInterface.toHello();
