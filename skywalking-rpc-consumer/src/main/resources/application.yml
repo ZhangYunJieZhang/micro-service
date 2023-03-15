@@ -1,0 +1,11 @@
+server:
+  port: 8884
+spring:
+  application:
+    name: skywalking-rpc-consumer
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos

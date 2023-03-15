@@ -1,0 +1,18 @@
+server:
+  port: 8886
+spring:
+  application:
+    name: springcloud-sentinel
+  cloud:
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+#    nacos:
+#      discovery:
+#        server-addr: localhost:8848
+#        username: nacos
+#        password: nacos
+
+feign:
+  sentinel:
+    enabled: true #开启openFeign对sentinel的整合

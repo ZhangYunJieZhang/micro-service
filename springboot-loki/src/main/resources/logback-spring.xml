@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 上下文名称，使用spring标签读取应用配置文件 -->
+    <contextName>${APP_NAME}</contextName>
+    <!-- 当配置文件名为logback-spring.xml才可以使用这种标签读取yml配置，其他支持的配置文件名如logback.xml则不行 -->
+    <springProperty name="APP_NAME" scope="context" source="spring.application.name"/>
+
+    <springProperty name="LOG_LEVEL" scope="context" source="ihp.logging.level" defaultValue="DEBUG"/>
+
+    <springProperty name="LOG_MAXFILESIZE" scope="context" source="logback.filesize" defaultValue="20MB"/>
+
+    <!-- 日志的输出目录 -->
+    <property name="log.path" value="D:/${APP_NAME}" />
+
+    <property name="SYSTEM_NAME" value="${APP_NAME}" />
+
+    <!--控制台日志格式：彩色日志-->
+    <!-- magenta:洋红 -->
+    <!-- boldMagenta:粗红-->
+    <!-- cyan:青色 -->
+    <!-- white:白色 -->
+    <!-- magenta:洋红 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%yellow(%date{yyyy-MM-dd HH:mm:ss}) %highlight([%-5level]) %green(%logger) %msg%n"/>
+
+    <!--文件日志格式-->
+    <property name="FILE_LOG_PATTERN"
+              value="%date{yyyy-MM-dd HH:mm:ss} [%-5level] %thread %file:%line %logger %msg%n" />
+
+    <!--编码-->
+    <property name="ENCODING"
+              value="UTF-8" />
+
+    <!-- 这个scope属性有3个值（local，context，system）,用于在设置属性时选择不同的策略。local是指通过interpretationcontext设置属性。上下文是指按上下文设置属性。system是指通过system.setproperty（key，value）的代码设置属性 -->
+    <springProperty scope="context" name="lokiUrl" source="loki.url"/>
+
+    <!--loki日志-->
+    <appender name="LOKI_APPENDER" class="com.github.loki4j.logback.Loki4jAppender">
+        <batchTimeoutMs>1000</batchTimeoutMs>
+        <http class="com.github.loki4j.logback.ApacheHttpSender">
+            <url>${lokiUrl}/push</url>
+        </http>
+        <format>
+            <label>
+                <!-- 这里定义多少就代表grafana有多少个搜索条件 -->
+                <pattern>system=${SYSTEM_NAME},level=%level,logType=%X{log_file_type:-logType}</pattern>
+            </label>
+            <message>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </message>
+            <sortByTime>true</sortByTime>
+        </format>
+    </appender>
+
+
+    <!-- 控制台日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>${ENCODING}</charset>
+        </encoder>
+    </appender>
+
+    <!-- 文件日志 -->
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!--  要区别于其他的appender中的文件名字  -->
+        <file>${log.path}/log-rolling.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${ENCODING}</charset>
+        </encoder>
+
+
+        <!-- 设置滚动日志记录的滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志归档路径以及格式，以 .gz 或者 .zip结尾会自动触发压缩 -->
+            <fileNamePattern>${log.path}/info/log-rolling-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 归档日志文件保留的最大数量 -->
+            <maxHistory>15</maxHistory>
+            <!-- 每个文件大小 -->
+            <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+        </rollingPolicy>
+
+        <!-- 只打印错误日志,可以配置多个appender，用filter来区分成功日志和错误日志 -->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>-->
+
+    </appender>
+
+    <!-- 异步输出常规日志文件 -->
+    <appender name="ASYNC-BIZ" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>1024</queueSize>
+        <!-- 开启非阻塞 -->
+        <neverBlock>true</neverBlock>
+        <!-- 添加附加的appender,最多只能添加⼀个 -->
+        <appender-ref ref="ROLLING_FILE"/>
+    </appender>
+
+    <!-- 日志记录器  -->
+    <!--    <logger name="com.atguigu" level="INFO">-->
+    <!--        <appender-ref ref="CONSOLE" />-->
+    <!--        <appender-ref ref="FILE" />-->
+    <!--    </logger>-->
+
+    <!-- 按照测试环境和生产环境等区分 -->
+    <!--<springProfile name="dev,test">
+        <logger name="com.zyj" level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="LOKI_APPENDER"/>
+        </logger>
+    </springProfile>-->
+
+    <!-- 基本输出，不符合设置就默认使用这个 -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI_APPENDER"/>
+        <!--<appender-ref ref="ASYNC-BIZ"/>--><!-- 本地测试默认不开启，只开启控制台 -->
+    </root>
+
+    <!-- 具体包路径或者类打印什么级别的日志 -->
+    <logger name="com.alibaba.nacos" additivity="false" level="ERROR"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.netflix.loadbalancer" level="INFO"/>
+    <logger name="ma.glasnost.orika" level="INFO"/>
+    <logger name="io.lettuce" level="INFO"/>
+    <logger name="org.mybatis.spring" level="INFO"/>
+    <logger name="com.baomidou.mybatisplus.core" level="INFO"/>
+    <logger name="com.baomidou.mybatisplus.extension.spring" level="INFO"/>
+    <logger name="springfox" level="WARN"/>
+    <logger name="java.sql.Connection" level="DEBUG"/>
+    <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    <logger name="java.sql.Statement" level="DEBUG"/>
+    <logger name="io.undertow" level="INFO"/>
+    <logger name="httpclient.wire.content" level="WARN"/>
+    <logger name="reactor" level="INFO"/>
+
+</configuration>

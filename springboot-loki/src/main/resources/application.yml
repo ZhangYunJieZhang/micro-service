@@ -1,0 +1,9 @@
+server:
+  port: 8885
+spring:
+  application:
+    name: springboot-loki
+
+
+loki:
+  url: http://localhost:3100/loki/api/v1

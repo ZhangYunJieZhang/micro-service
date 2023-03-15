@@ -28,6 +28,8 @@
 		<module>jetcache</module>
 		<module>kafka</module>
         <module>springboot-redis</module>
-    </modules>
+        <module>sleuth-zipkin</module>
+		<module>sleuth-zipkin-server</module>
+	</modules>
 
 </project>

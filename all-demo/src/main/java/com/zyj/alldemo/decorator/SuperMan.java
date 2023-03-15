@@ -12,6 +12,7 @@ public class SuperMan extends DecoratorAbstract {
     }
 
     @Override
+    @DecoratorExist
     void say() {
         System.out.println("此处执行方法增强");
         decoratorAbstract.say();
